@@ -7,7 +7,7 @@ from math import sqrt
 import sys
 
 CAMERA_POS = (0.5, -2.5, 1.0)
-BEZIER_POINTS = ((0, 0), (0.5, 2.0), (1.0, 0))
+BEZIER_POINTS = ((0, 0), (0.5, 1.0), (1.0, 0))
 SEGMENTS = 50
 
 def bezier(pt1, pt2, pt3):
