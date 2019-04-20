@@ -67,6 +67,10 @@ def project_to_plane(pt1, pt2):
 		pt1[2] + frac * (pt2[2] - pt1[2]),
 	)
 
+if len(sys.argv) != 3:
+	print("Usage: %s input.png output.png" % (sys.argv[0],))
+	sys.exit(1)
+
 curve = bezier(*BEZIER_POINTS)
 curve_len = curve_length(curve)
 
@@ -87,4 +91,4 @@ for bx, t in enumerate(make_ts(curve, curve_len, backdrop.width)):
 		p = im.getpixel((ix, iy))
 		backdrop.putpixel((bx, by), p)
 
-backdrop.save('backdrop.png')
+backdrop.save(sys.argv[2])
