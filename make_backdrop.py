@@ -6,9 +6,9 @@ from math import sqrt
 
 import sys
 
-CROP_FRACTION = 0.25  # off the bottom of the source image
-CAMERA_POS = (0.5, -2.5, 0.8)
-BEZIER_POINTS = ((0, 0), (0.5, 1.0), (1.0, 0))
+CROP_FRACTION = 0.2  # off the bottom of the source image
+CAMERA_POS = (0.5, -1.3, 0.8)
+BEZIER_POINTS = ((0, 0), (0.5, 0.85), (1.0, 0))
 SEGMENTS = 50
 
 def bezier(pt1, pt2, pt3):
