@@ -6,7 +6,8 @@ from math import sqrt
 
 import sys
 
-CAMERA_POS = (0.5, -2.5, 1.0)
+CROP_FRACTION = 0.25  # off the bottom of the source image
+CAMERA_POS = (0.5, -2.5, 0.8)
 BEZIER_POINTS = ((0, 0), (0.5, 1.0), (1.0, 0))
 SEGMENTS = 50
 
@@ -109,6 +110,7 @@ if len(sys.argv) != 4 or sys.argv[1] not in ("-w", "-f"):
 
 im = Image.open(sys.argv[2])
 im = im.convert(mode='RGBA')
+im = im.crop((0, 0, im.width, int(im.height * (1 - CROP_FRACTION))))
 
 if sys.argv[1] == "-w":
 	out = make_wall(im)
