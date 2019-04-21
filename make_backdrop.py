@@ -67,28 +67,57 @@ def project_to_plane(pt1, pt2):
 		pt1[2] + frac * (pt2[2] - pt1[2]),
 	)
 
-if len(sys.argv) != 3:
+def color_at_world_pt(im, wpt):
+	pt = project_to_plane(CAMERA_POS, wpt)
+	ix = int(pt[0] * im.width)
+	iy = im.height - 1 - int(pt[2] * im.height)
+	return im.getpixel((ix, iy))
+
+def make_wall(im):
+	curve = bezier(*BEZIER_POINTS)
+	curve_len = curve_length(curve)
+	backdrop = Image.new('RGBA', (
+		int(im.width * curve_len),
+		im.height,
+	))
+
+	for bx, t in enumerate(make_ts(curve, curve_len, backdrop.width)):
+		wx, wy = curve(t)
+		for by in range(backdrop.height):
+			wz = 1.0 - float(by) / backdrop.height
+			p = color_at_world_pt(im, (wx, wy, wz))
+			backdrop.putpixel((bx, by), p)
+
+	return backdrop
+
+def make_floor(im):
+	frac = (CAMERA_POS[2] - 0.333) / CAMERA_POS[2]
+	wy = CAMERA_POS[1] - CAMERA_POS[1] / frac
+	h = int(wy * im.height)
+	floor = Image.new('RGBA', (
+		im.width,
+		int(wy * im.height),
+	))
+	for by in range(floor.height):
+		# width, not height is deliberate here:
+		wy = float(by) / floor.width
+		for bx in range(floor.width):
+			wx = float(bx) / floor.width
+			p = color_at_world_pt(im, (wx, wy, 0))
+			floor.putpixel((bx, floor.height - 1 - by), p)
+	return floor
+
+if len(sys.argv) != 4 or sys.argv[1] not in ("-w", "-f"):
 	print("Usage: %s input.png output.png" % (sys.argv[0],))
 	sys.exit(1)
 
-curve = bezier(*BEZIER_POINTS)
-curve_len = curve_length(curve)
-
-im = Image.open(sys.argv[1])
+im = Image.open(sys.argv[2])
 im = im.convert(mode='RGBA')
-backdrop = Image.new('RGBA', (
-	int(im.width * curve_len),
-	im.height,
-))
 
-for bx, t in enumerate(make_ts(curve, curve_len, backdrop.width)):
-	wx, wy = curve(t)
-	for by in range(backdrop.height):
-		wz = 1.0 - float(by) / backdrop.height
-		pt = project_to_plane(CAMERA_POS, (wx, wy, wz))
-		ix = int(pt[0] * im.width)
-		iy = im.height - int(pt[2] * im.height)
-		p = im.getpixel((ix, iy))
-		backdrop.putpixel((bx, by), p)
+if sys.argv[1] == "-w":
+	out = make_wall(im)
+elif sys.argv[1] == "-f":
+	out = make_floor(im)
 
-backdrop.save(sys.argv[2])
+out.save(sys.argv[3])
+
