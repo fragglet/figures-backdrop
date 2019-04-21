@@ -91,18 +91,14 @@ def make_wall(im):
 	return backdrop
 
 def make_floor(im):
-	frac = (CAMERA_POS[2] - 0.333) / CAMERA_POS[2]
-	wy = CAMERA_POS[1] - CAMERA_POS[1] / frac
-	h = int(wy * im.height)
 	floor = Image.new('RGBA', (
 		im.width,
-		int(wy * im.height),
+		im.width,
 	))
 	for by in range(floor.height):
-		# width, not height is deliberate here:
-		wy = float(by) / floor.width
+		wy = float(by) / im.width
 		for bx in range(floor.width):
-			wx = float(bx) / floor.width
+			wx = float(bx) / im.width
 			p = color_at_world_pt(im, (wx, wy, 0))
 			floor.putpixel((bx, floor.height - 1 - by), p)
 	return floor
